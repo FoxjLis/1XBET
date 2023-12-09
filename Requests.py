@@ -8,8 +8,11 @@ def match_history_between_teams(team_1, team_2):
         cur.execute(f"SELECT * FROM matches WHERE Teams = '{team_1} – {team_2}' or Teams = '{team_2} – {team_1}'")
         for result in cur:
             match_counter += 1
-            text += (f'✅ Матч проходил: {result[1]}\nТип противостояния: {result[2]}\nРезультат: {result[4]} {result[5]}\n\n')
-        if text!="":
+            if result[5] != '–:–':
+                text += (f'✅ Матч проходил: {result[1]}\nТип противостояния: {result[2]}\nРезультат: {result[4]} {result[5]}\n\n')
+            else:
+                text += (f'✅ Матч пройдёт: {result[1]}\nТип противостояния: {result[2]}\n')
+        if text != "":
             text += (f'Всего матчей между командами: {match_counter}\n\n')
         return text
 
