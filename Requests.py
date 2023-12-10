@@ -48,12 +48,12 @@ def team_members(team_name):
         text += (f'Состав команды {team_name} ✅\n{team}')
     return text
 
-def team_stat(team_name):
+def team_stat(team_name,team_city):
     text = ''
     with sq.connect('sports.db') as con:
         cur = con.cursor()
-        cur.execute(f"SELECT * FROM Teams WHERE TeamName = '{team_name}'")
+        cur.execute(f"SELECT * FROM Teams WHERE TeamName = '{team_name}' and TeamCity = '{team_city)'")
         for result in cur:
             text += (
-                f'Статистика команды {team_name} ✅\nТурниров, проводимых с участием команды - {result[4]}\nИгр сыграно - {result[5]}\nПобед - {result[6]}\nНичьих - {result[7]}\nПоражений - {result[8]}\nШайб забито - {result[9]}\nШайб пропущено - {result[10]}\nРазница забитых и пропущенных - {result[11]}\nНабранные очки - {result[12]}\nПроцент реализованных очков от возможных - {result[13]}')
+                f'Статистика команды {team_name} {team_city} ✅\nТурниров, проводимых с участием команды - {result[4]}\nИгр сыграно - {result[5]}\nПобед - {result[6]}\nНичьих - {result[7]}\nПоражений - {result[8]}\nШайб забито - {result[9]}\nШайб пропущено - {result[10]}\nРазница забитых и пропущенных - {result[11]}\nНабранные очки - {result[12]}\nПроцент реализованных очков от возможных - {result[13]}')
     return text
