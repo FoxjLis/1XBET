@@ -7,11 +7,13 @@ from Requests import (
     team_members,
     team_stat
 )
+
 import alerts2
 import kb
 import parsers
 import text
 import config
+from calculator_Elo import predict_matches
 
 bot = Bot(token=config.BOT_TOKEN, parse_mode='HTML')
 news_set_volley = set()
@@ -75,8 +77,9 @@ async def type_stat(callback: CallbackQuery):
             text='🔎 Введите Фамилию и имя игрока <b>через пробел</b> с <b>заглавной буквы</b>\nПример: "Мишуров Андрей"',
             reply_markup=kb.back)
     elif callback.data == 'team':
-        await callback.message.edit_text(text='🔎 Введите Название команды c заглавной буквы. Пример: "Лада"',
-                                         reply_markup=kb.back)
+        await callback.message.edit_text(
+            text='🔎 Введите Название команды c заглавной буквы и город, за который она выступает, например: "ЦСКА Москва"',
+            reply_markup=kb.back)
     elif callback.data == 'history':
         await callback.message.edit_text(
             text='🔎 Введите название первой команды c <b>заглавной буквы и город</b>, за который она выступает, например: "ЦСКА Москва"',
@@ -89,38 +92,57 @@ async def print_stat(message):
     user_id = message.from_user.id
     if users[user_id][-1] == 'player':
         if player_stat(users_input[user_id][0]) != '':
-            msg = await message.answer(text=player_stat(users_input[user_id][0]), reply_markup=kb.back)
+            await message.answer(text=player_stat(users_input[user_id][0]), reply_markup=kb.back)
         else:
-            msg = await message.answer('Игрок с таким именем не найден ❌ Попробуйте ещё раз!', reply_markup=kb.back)
-        return msg.message_id
+            await message.answer('Игрок с таким именем не найден ❌ Попробуйте ещё раз!', reply_markup=kb.back)
+
     if users[user_id][-1] == 'team':
-        if team_stat(users_input[user_id][0]) != '':
-            stat = team_stat(users_input[user_id][0])
-            members = team_members(users_input[user_id][0])
-            msg = await message.answer(text=f'{members}\n\n{stat}', reply_markup=kb.back)
+        text_user = users_input[user_id][0]
+        team_name = text_user[0:text_user.rfind(' ')]
+        town_name = text_user[text_user.rfind(' ') + 1:]
+        print(team_name)
+        print(town_name)
+        if team_stat(team_name, town_name) != '':
+            stat = team_stat(team_name, town_name)
+            members = team_members(team_name)
+            await message.answer(text=f'{members}\n\n{stat}', reply_markup=kb.back)
         else:
-            msg = await message.answer('Команда с таким названием не найдена ❌ Попробуйте ещё раз!\nВведите название команды:',
-                                       reply_markup=kb.back)
-        return msg.message_id
+            await message.answer(
+                'Команда с таким названием или городом не найдена ❌ Попробуйте ещё раз! Введите Название команды c заглавной буквы и город, за который она выступает, например: "ЦСКА Москва"',
+                reply_markup=kb.back)
+
     if users[user_id][-1] == 'history':
+        team1 = users_input[user_id][0]
+        team_name = team1[0:team1.rfind(' ')]
+        town_name = team1[team1.rfind(' ') + 1:]
         if team_fight_history[user_id] == []:
-            team_fight_history[user_id].append(users_input[user_id][0])
-            msg = await message.answer(
-                f'Первая команда - {team_fight_history[user_id][0]} ✅\nВведите название второй команды, например: "Ак Барс Казань"',
-                reply_markup=kb.back)
-        else:
-            team_fight_history[user_id].append(users_input[user_id][0])
-            text = match_history_between_teams(team_fight_history[user_id][0], team_fight_history[user_id][1])
-            if text == '' or team_fight_history[user_id][0]==team_fight_history[user_id][1]:
-                text1 = 'не найдена ❌ Попробуйте ещё раз! Введите название первой команды'
+            team_fight_history[user_id].append(team1)
+            if team_stat(team_name, town_name) != "":
+                await message.answer(
+                    f'Первая команда - {team1} ✅\nВведите название второй команды, например: "Ак Барс Казань"',
+                    reply_markup=kb.back)
             else:
-                text1 = 'найдена ✅'
-            msg = await message.answer(
-                text=f'История противостояний команд {team_fight_history[user_id][0]} и {team_fight_history[user_id][1]} {text1}\n\n{text}',
-                reply_markup=kb.back)
-            team_fight_history[user_id] = []
-        print(team_fight_history)
-        return msg.message_id
+                team_fight_history[user_id] = []
+                await message.answer(
+                    f'Команда с таким названием или городом не найдена ❌ Попробуйте ещё раз! Введите Название <b><i>первой</i></b> команды c заглавной буквы и город, за который она выступает, например: "ЦСКА Москва"',
+                    reply_markup=kb.back)
+
+        else:
+            if team_stat(team_name, town_name) != "":
+                team_fight_history[user_id].append(team1)
+                text = match_history_between_teams(team_fight_history[user_id][0], team_fight_history[user_id][1])
+                if text == '' or team_fight_history[user_id][0] == team_fight_history[user_id][1]:
+                    text1 = 'не найдена ❌ Попробуйте ещё раз! Введите название первой команды'
+                else:
+                    text1 = 'найдена ✅'
+                await message.answer(
+                    text=f'История противостояний команд {team_fight_history[user_id][0]} и {team_fight_history[user_id][1]} {text1}\n\n{text}',
+                    reply_markup=kb.back)
+                team_fight_history[user_id] = []
+            else:
+                await message.answer(
+                    f'Команда с таким названием или городом не найдена ❌ Попробуйте ещё раз! Введите Название <b><i>второй</i></b> команды c заглавной буквы и город, за который она выступает, например: "ЦСКА Москва"',
+                    reply_markup=kb.back)
 
 
 async def add_a_sport(callback):
@@ -177,22 +199,26 @@ async def distribute(callback):
 
 @router.message()
 async def process_name(message: Message):
-    user_id = message.from_user.id
-    user_text = message.text
-    print(users)
-    print(user_text)
     try:
+        user_id = message.from_user.id
+        user_text = message.text
         users_input[user_id][0] = user_text
-        msg = await print_stat(message)
-        users_input[user_id].append(msg)
-        await bot.delete_message(chat_id=user_id, message_id=(users_input[user_id][-1]) - 2)
-        await bot.delete_message(chat_id=user_id, message_id=(users_input[user_id][-1]) - 1)
+        await print_stat(message)
     except:
-        await message.answer(text='Я не знаю такой команды!',reply_markup=kb.go_menu)
+        await message.answer('Я не знаю такой команды!\nИспользуй кнопки!', reply_markup=kb.go_menu)
+
+
 async def print_news(sport, callback):
     sport_parsers = {
         'football': parsers.parser_football,
         'hockey': parsers.parser_hockey,
         'volleyball': parsers.parser_volleyball}
     post_text = sport_parsers[sport]()
+
     await callback.message.edit_text(text=post_text, reply_markup=kb.back)
+
+
+@router.callback_query(F.data == "prediction")
+async def prediction(callback):
+    text = await predict_matches()
+    await callback.message.edit_text(text=text, reply_markup=kb.go_menu)

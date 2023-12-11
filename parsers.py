@@ -2,9 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 from aiogram import F, Router
 
-router1 = Router()
-
-
 def parser_hockey():
     URL = "https://news.sportbox.ru/Vidy_sporta/Hokkej"
     page = requests.get(URL)

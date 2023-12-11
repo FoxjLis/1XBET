@@ -43,14 +43,18 @@ async def send_alert_news(callback, users_news):
         news_text_h = await news_texting_hockey()
         news_text_v = await news_texting_volleyball()
         news_text_f = await news_texting_football()
-        if callback.data == 'footbal' and len(news_set_foot) > 2 and users_news[id][0]:
+        if callback.data == 'footbal' and len(news_set_foot) > 1 and users_news[id][0]:
             await bot.send_message(id, 'Актуальные новости по футболу:\n' + news_text_f, reply_markup=kb.go_menu)
+            print(news_set_foot)
             news_set_foot.clear()
-        if callback.data == "volleyball" and len(news_set_foot) > 2 and users_news[id][2]:
+
+        if callback.data == "volleyball" and len(news_set_volley) > 1 and users_news[id][2]:
             await bot.send_message(id, 'Актуальные новости по волейболу:\n' + news_text_v, reply_markup=kb.go_menu)
+            print(news_set_volley)
             news_set_volley.clear()
-        if callback.data == "hockey" and len(news_set_foot) > 2 and users_news[id][1]:
+        if callback.data == "hockey" and len(news_set_hockey) > 1 and users_news[id][1]:
             await bot.send_message(id, 'Актуальные новости по хоккею:\n' + news_text_h, reply_markup=kb.go_menu)
+            print(news_set_foot)
             news_set_hockey.clear()
 
     async def send_periodically():

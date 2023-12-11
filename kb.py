@@ -4,7 +4,7 @@ import text
 menu = [[InlineKeyboardButton(text='Статистика', callback_data="search_directory")],
         [InlineKeyboardButton(text="🔍Новости", callback_data='news'),
          InlineKeyboardButton(text="🚀Оповещения", callback_data='alerts')],
-        [InlineKeyboardButton(text="🥇Развлекательная функция", callback_data="catalog4")]]
+        [InlineKeyboardButton(text="🥇Развлекательная функция", callback_data="prediction")]]
 menu = InlineKeyboardMarkup(inline_keyboard=menu)
 kinds_sports = [
     [InlineKeyboardButton(text="Футбол", callback_data="football"),
