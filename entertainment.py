@@ -39,7 +39,7 @@ def entertainment_function():
     print('Готовы посоревноваться в прогнозировании результатов матчей с нашим ботом?\nБез лишних слов начнём')
     variants_of_start = ['И следующий матч', 'И теперь у нас матч', 'Переходим к следующему матчу', 'А сейчас у нас матч']
 
-    for question_number in range(5):
+    for question_number in range(len(matches_info)):
         if question_number == 0:
             print(f'Первые на очереди у нас {matches_info[question_number][0]} и {matches_info[question_number][1]}. Кто по вашему мнению победит?')
 
@@ -53,7 +53,7 @@ def entertainment_function():
             # if #функция влада:
             # bot_score += 1
         else:
-            prefix_random = randint(0,4)
+            prefix_random = randint(0,3)
             print(f'{variants_of_start[prefix_random]} между {matches_info[question_number][0]} и {matches_info[question_number][1]}. Кто по вашему мнению победит?')
 
             player_input = input()
