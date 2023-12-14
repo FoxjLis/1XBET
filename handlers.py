@@ -49,7 +49,7 @@ async def news(callback: CallbackQuery):
 @router.callback_query(F.data == 'back')
 async def news_callback(callback: CallbackQuery):
     user_id = callback.from_user.id
-    options = ['search_directory', 'news', 'alerts']
+    options = ['search_directory', 'news', 'alerts',"prediction"]
     if users[user_id][-2] in options:
         await select_an_option(callback, users[user_id][-2])
         users[user_id] = [users[user_id][0]]
