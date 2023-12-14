@@ -1,5 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton
-import text
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 menu = [[InlineKeyboardButton(text='Статистика', callback_data="search_directory")],
         [InlineKeyboardButton(text="🔍Новости", callback_data='news'),
@@ -19,11 +18,12 @@ back = [
 back = InlineKeyboardMarkup(inline_keyboard=back)
 choose = [
     [InlineKeyboardButton(text="Игра", callback_data="play"),
-     InlineKeyboardButton(text="Предсказание", callback_data="match_results")],[InlineKeyboardButton(text="В меню", callback_data="menu")]]
+     InlineKeyboardButton(text="Предсказание", callback_data="match_results")],
+    [InlineKeyboardButton(text="В меню", callback_data="menu")]]
 choose = InlineKeyboardMarkup(inline_keyboard=choose)
-go_menu=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="В меню", callback_data="menu")]])
-type_statik = [[InlineKeyboardButton(text='История противостояния',callback_data='history')],
-    [InlineKeyboardButton(text="Команда", callback_data="team"),
-     InlineKeyboardButton(text="Игрок", callback_data="player")],
-    [InlineKeyboardButton(text="Назад", callback_data="back")]]
+go_menu = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="В меню", callback_data="menu")]])
+type_statik = [[InlineKeyboardButton(text='История противостояния', callback_data='history')],
+               [InlineKeyboardButton(text="Команда", callback_data="team"),
+                InlineKeyboardButton(text="Игрок", callback_data="player")],
+               [InlineKeyboardButton(text="Назад", callback_data="back")]]
 type_statik = InlineKeyboardMarkup(inline_keyboard=type_statik)
