@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from aiogram import F, Router
 
 def parser_hockey():
     URL = "https://news.sportbox.ru/Vidy_sporta/Hokkej"

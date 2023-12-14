@@ -17,6 +17,10 @@ back = [
     [InlineKeyboardButton(text="Назад", callback_data="back"),
      InlineKeyboardButton(text="В меню", callback_data="menu")]]
 back = InlineKeyboardMarkup(inline_keyboard=back)
+choose = [
+    [InlineKeyboardButton(text="Игра", callback_data="play"),
+     InlineKeyboardButton(text="Предсказание", callback_data="match_results")],[InlineKeyboardButton(text="В меню", callback_data="menu")]]
+choose = InlineKeyboardMarkup(inline_keyboard=choose)
 go_menu=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="В меню", callback_data="menu")]])
 type_statik = [[InlineKeyboardButton(text='История противостояния',callback_data='history')],
     [InlineKeyboardButton(text="Команда", callback_data="team"),

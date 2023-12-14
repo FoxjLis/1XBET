@@ -3,23 +3,25 @@ from parsers import parser_football, parser_hockey, parser_volleyball
 from aiogram import Bot
 
 bot = Bot(token=config.BOT_TOKEN, parse_mode='HTML')
-news_set_volley = set()
-news_set_foot = set()
-news_set_hockey = set()
+news_set_volley = []
+news_set_foot = []
+news_set_hockey = []
 
-
-async def send_alert_news(callback, users_news):
-    print(callback.data)
-    id = callback.from_user.id
-
+async def send_last_news(sport):
+    if sport=='football':
+        return news_set_foot
+    elif sport=='hockey':
+        return news_set_hockey
+    elif sport=='volleyball':
+        return news_set_volley
+async def send_alert_news(*args):
     def listing_data():
-
         post_text_h = parser_hockey()
-        if post_text_h!="": news_set_hockey.add(post_text_h)
+        if post_text_h!="" and post_text_h not in news_set_hockey: news_set_hockey.append(post_text_h)
         post_text_v = parser_volleyball()
-        if post_text_v!="":news_set_volley.add(post_text_v)
+        if post_text_v!="" and post_text_v not in news_set_volley:news_set_volley.append(post_text_v)
         post_text_f = parser_football()
-        if post_text_f!="":news_set_foot.add(post_text_f)
+        if post_text_f!="" and post_text_f not in news_set_foot:news_set_foot.append(post_text_f)
 
     async def news_texting_hockey():
         news_text_h = ""
@@ -40,6 +42,9 @@ async def send_alert_news(callback, users_news):
         return news_text_f
 
     async def edit_message():
+        callback=args[0]
+        users_news=args[1]
+        id = callback.from_user.id
         news_text_h = await news_texting_hockey()
         news_text_v = await news_texting_volleyball()
         news_text_f = await news_texting_football()
@@ -60,7 +65,7 @@ async def send_alert_news(callback, users_news):
     async def send_periodically():
         while True:
             listing_data()
-            await asyncio.sleep(300)
-            await edit_message()
-
+            await asyncio.sleep(120)
+            if len(args)==2:
+                await edit_message()
     asyncio.create_task(send_periodically())

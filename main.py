@@ -3,7 +3,6 @@ import logging
 from aiogram import Bot, Dispatcher
 import config
 from handlers import router
-from news import new_news
 
 async def main():
     logging.basicConfig(level=logging.INFO)
