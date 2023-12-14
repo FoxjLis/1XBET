@@ -2,10 +2,38 @@ import sqlite3
 from datetime import date
 
 
-async def predict_matches() -> str:
+def get_last_5_matches() -> list:
+    last_5_matches = []
+    with sqlite3.connect('../Main/sports.db') as con:
+        cur = con.cursor()
+        id_last_match = cur.execute(f"SELECT MatchID FROM matches WHERE score = '–:–' LIMIT 1")
+        id_last_match = cur.fetchall()
+        id_last_match = str(id_last_match[0])
+        id_last_match = int(id_last_match.strip('(),'))
+
+    for match_num in range(1, 6):
+        match_teams_and_winner = []
+        match_data = cur.execute(f"SELECT teams, score FROM matches WHERE MatchID = {id_last_match - match_num}")
+        match_data = cur.fetchall()
+        for match in match_data:
+            teams = match[0].split(' – ')
+            team1, team2 = teams[0], teams[1]
+            score = match[1].split(':')
+            score_team1, score_team2 = int(score[0]), int(score[1].strip('БОТ '))
+            match_teams_and_winner.append(team1)
+            match_teams_and_winner.append(team2)
+            if score_team1 > score_team2:
+                match_teams_and_winner.append(team1)
+            else:
+                match_teams_and_winner.append(team2)
+            last_5_matches.append(match_teams_and_winner)
+    return last_5_matches
+
+
+def calculate_elo():
     text = ""
     # Подключение к базе данных SQLite
-    conn = sqlite3.connect('../Main/sports.db')
+    conn = sqlite3.connect('Main/sports.db')
     cursor = conn.cursor()
 
     today = date.today()
@@ -107,56 +135,15 @@ async def predict_matches() -> str:
 
         team_elo_dict[team1] = Rn1
         team_elo_dict[team2] = Rn2
-
-    # Выполнение запроса для поиска матчей на текущую дату
-    cursor.execute("SELECT teams, matchdate FROM matches WHERE SUBSTR(matchdate, 1, 10) = ? ORDER BY matchdate ASC",
-                   (current_date,))
-    todays_matches = cursor.fetchall()
-
-    if todays_matches:
-        # Если есть матчи на сегодня, выводим их
-        text += (f"Предположительный исход матчей сегодня ({current_date})✅")
-        for match in todays_matches:
-            teams, match_date_time = match[0], match[1]
-            match_date, match_time = match_date_time.split(', ')
-
-            team1, team2 = teams.split(' – ')
-            elo_team1 = team_elo_dict.get(team1, initial_elo)
-            elo_team2 = team_elo_dict.get(team2, initial_elo)
-
-            if elo_team1 > elo_team2:
-                text += (f"🏒{match_time}\n {team1} - {team2}\n<b>Победит:</b> {team1}🏅\n\n")
-            else:
-                text += (f"🏒{match_time}\n {team1} - {team2}\n<b>Победит:</b> {team2}🏅\n\n")
-    else:
-        # Если на сегодня нет матчей, ищем и выводим ближайшую дату с матчами
-        cursor.execute("SELECT DISTINCT matchdate FROM matches WHERE matchdate > ? ORDER BY matchdate ASC",
-                       (current_date,))
-        nearest_date_match = cursor.fetchone()
-
-        if nearest_date_match:
-            # Если найдена ближайшая дата с матчами, выводим все матчи для этой даты
-            nearest_date = nearest_date_match[0].split(', ')[0]  # Выделение только даты из строки
-            text += (f"Предположительный исход матчей {nearest_date} ✅\n\n")
-
-            cursor.execute(
-                "SELECT teams, matchdate FROM matches WHERE SUBSTR(matchdate, 1, 10) = ? ORDER BY matchdate ASC",
-                (nearest_date,))
-            nearest_matches = cursor.fetchall()
-
-            for match in nearest_matches:
-                teams, match_date_time = match[0], match[1]
-                match_date, match_time = match_date_time.split(', ')
-
-                team1, team2 = teams.split(' – ')
-                elo_team1 = team_elo_dict.get(team1, initial_elo)
-                elo_team2 = team_elo_dict.get(team2, initial_elo)
-
-                if elo_team1 > elo_team2:
-                    text += (f"🏒{match_time} {team1} - {team2}\n<b>Победит:</b> {team1}🏅\n\n")
-                else:
-                    text += (f"🏒{match_time} {team1} - {team2}\n<b>Победит:</b> {team2}🏅\n\n")
-        else:
-            text += ("На ближайшее время матчи не найдены.")
     conn.close()
-    return (text)
+    return team_elo_dict
+
+
+teams_elo = (calculate_elo())
+
+
+def check_winner(team1, team2):
+    if teams_elo[team1] > teams_elo[team2]:
+        return team1
+    else:
+        return team2

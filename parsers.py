@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
-def parser_hockey():
+
+def parser_hockey() -> str:
     URL = "https://news.sportbox.ru/Vidy_sporta/Hokkej"
     page = requests.get(URL)
     soup = BeautifulSoup(page.content, "html.parser")
@@ -11,7 +12,7 @@ def parser_hockey():
     return f'{title}\n<a href="https://news.sportbox.ru{url}">Подробнее:</a>'
 
 
-def parser_football():
+def parser_football() -> str:
     URL = "https://news.sportbox.ru/Vidy_sporta/Futbol"
     page = requests.get(URL)
     soup = BeautifulSoup(page.content, "html.parser")
@@ -21,7 +22,7 @@ def parser_football():
     return f'{title}\n<a href="https://news.sportbox.ru{url}">Подробнее:</a>'
 
 
-def parser_volleyball():
+def parser_volleyball() -> str:
     URL = "https://news.sportbox.ru/Vidy_sporta/Volejbol"
     page = requests.get(URL)
     soup = BeautifulSoup(page.content, "html.parser")
