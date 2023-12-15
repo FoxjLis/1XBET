@@ -1,11 +1,10 @@
 import sqlite3
 from datetime import date
 
-
 async def predict_matches() -> str:
     text = ""
     # Подключение к базе данных SQLite
-    conn = sqlite3.connect('../Main/sports.db')
+    conn = sqlite3.connect('Main/sports.db')
     cursor = conn.cursor()
 
     today = date.today()

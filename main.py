@@ -6,7 +6,7 @@ from handlers.Handlers import router
 from Funk.News_func import do_parser_news
 
 
-async def main():
+async def main() -> None:
     logging.basicConfig(level=logging.INFO)
     bot = Bot(token=config.BOT_TOKEN, parse_mode='HTML')
     dp = Dispatcher()

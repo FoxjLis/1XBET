@@ -4,7 +4,7 @@ from datetime import date
 
 def get_last_5_matches() -> list:
     last_5_matches = []
-    with sqlite3.connect('../Main/sports.db') as con:
+    with sqlite3.connect('Main/sports.db') as con:
         cur = con.cursor()
         id_last_match = cur.execute(f"SELECT MatchID FROM matches WHERE score = '–:–' LIMIT 1")
         id_last_match = cur.fetchall()

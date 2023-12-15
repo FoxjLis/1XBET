@@ -2,7 +2,7 @@ import sqlite3 as sq
 
 
 def match_history_between_teams(team_1: str, team_2: str) -> str:
-    with sq.connect('../Main/sports.db') as con:
+    with sq.connect('Main/sports.db') as con:
         text = ''
         cur = con.cursor()
         match_counter = 0
@@ -21,7 +21,7 @@ def match_history_between_teams(team_1: str, team_2: str) -> str:
 
 def player_stat(player_name: str) -> str:
     text = ''
-    with sq.connect('../Main/sports.db') as con:
+    with sq.connect('Main/sports.db') as con:
         cur = con.cursor()
         cur.execute(f"SELECT * FROM players WHERE name = '{player_name}'")
         for result in cur:
@@ -39,7 +39,7 @@ def player_stat(player_name: str) -> str:
 
 def team_members(team_name: str) -> str:
     text = ''
-    with sq.connect('../Main/sports.db') as con:
+    with sq.connect('Main/sports.db') as con:
         cur = con.cursor()
         cur.execute(f"SELECT TeamID FROM teams WHERE TeamName = '{team_name}'")
         team_name_value = cur.fetchall()[0][0]
@@ -55,7 +55,7 @@ def team_members(team_name: str) -> str:
 
 def team_stat(team_name: str, team_city: str) -> str:
     text = ''
-    with sq.connect('../Main/sports.db') as con:
+    with sq.connect('Main/sports.db') as con:
         cur = con.cursor()
         cur.execute(f"SELECT * FROM Teams WHERE TeamName = '{team_name}' and TeamCity = '{team_city}'")
         for result in cur:
